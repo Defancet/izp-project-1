@@ -1,63 +1,46 @@
-# Projekt 1 - Ověřování síly hesel (práce s textem)
+# Project 1 - Password Strength Verification (text processing)
 
+## Project Description
+The goal of the project is to create a program that receives a set of passwords and verifies whether each password meets all the (fixed) required rules. Passwords that pass the check will be printed out, others will be discarded.
 
-## Popis projektu
-Cílem projektu je vytvořit program, který na vstupu dostane sadu hesel a pro každé z nich ověří, jestli heslo splňuje všechna (pevně zadaná) požadovaná pravidla. Ta hesla, která projdou kontrolou, budou vypisována na výstup, ostatní budou zahozena.
-
-## Detailní specifikace
-Program implementujte ve zdrojovém souboru "pwcheck.c". Vstupní data (seznam hesel) budou čtena ze standardního vstupu (stdin), výstup (filtrovaný seznam hesel) bude tisknut na standardní výstup (stdout).
-
-## Překlad zdrojového souboru:
+## Compiling the Source File:
 
 `gcc -std=c99 -Wall -Wextra -Werror pwcheck.c -o pwcheck `
 
-## Syntax spuštění
-Program se spouští v následující podobě: (./pwcheck značí umístění a název programu):
+## Execution Syntax
+The program is launched in the following manner: (`./pwcheck` indicates the location and name of the program):
 `./pwcheck LEVEL PARAM [--stats]`
 
-Program je spouštěn se dvěma pevně zadanými argumenty LEVEL a PARAM a s jedním volitelným argumentem --stats, případně zadaným na třetí pozici:
-| Příkaz | Popis |
+The program is run with two fixed arguments LEVEL and PARAM and with one optional argument --stats, possibly given in the third position:
+
+| Command | Description |
 | --- | --- |
-| `LEVEL` | Celé číslo v intervalu [1, 4], které určuje požadovanou úroveň bezpečnosti (viz níže). |
-| `PARAM` | Kladné celé číslo, které určuje dodatečný parametr pravidel (viz níže). |
-| `--stats` | Pokud je zadané, určuje, zda se na konci programu mají vypsat souhrnné statistiky analyzovaných hesel. |
+| `LEVEL` | An integer in the range [1, 4], which specifies the required security level (see below). |
+| `PARAM` | A positive integer that specifies an additional parameter of the rules (see below). |
+| `--stats` | If given, it specifies whether to print a summary of statistics of the analyzed passwords at the end of the program. |
 
-## Úrovně bezpečnosti (kontrolovaná pravidla)
+## Security Levels (controlled rules)
+There are a total of 4 security levels expressed through 4 rules. The security level determines that passwords must meet all rules at that level and lower. For example, security level 3 specifies that passwords must meet rules 1, 2, and 3.
 
-Jsou definovány celkem 4 úrovně bezpečnosti vyjádřeny pomocí 4 pravidel. Úroveň bezpečnosti určuje, že hesla musí splňovat všechna pravidla na dané a nižší úrovni. Tzn. např. úroveň bezpečnosti 3 specifikuje, že hesla musí splňovat pravidla 1, 2 a 3.
+Some rules are parameterizable with an integer given using the program argument PARAM. In the following list, this parameter is marked as X.
 
-Některá pravidla jsou parametrizovatelná celým číslem zadaným pomocí argumentu programu PARAM. V následujícím seznamu je tento parametr označen jako X.
+### List of Rules:
+1. The password contains at least 1 uppercase and 1 lowercase letter.
+2. The password contains characters from at least X groups (if the number X is greater than 4, it refers to all groups). The considered groups are:
+   - lowercase letters (a-z)
+   - uppercase letters (A-Z)
+   - numbers (0-9)
+   - special characters (must support at least non-alphanumeric characters from the ASCII table at positions 32-126, including space)
+3. The password does not contain a sequence of the same characters of length at least X.
+4. The password does not contain two identical substrings of length at least X.
 
-## Seznam pravidel:
+## Statistics
+If the program argument `--stats` is specified, the program must print the total statistics at the end of the output in the format:
 
-1. Heslo obsahuje alespoň 1 velké a 1 malé písmeno.
-2. Heslo obsahuje znaky z alespoň X skupin (v případě, že je číslo X větší než 4, myslí se tím všechny skupiny). Uvažované skupiny jsou:
-    - malá písmena (a-z)
-    - velká písmena (A-Z)
-    - čísla (0-9)
-    - speciální znaky (podporované musí být alespoň nealfanumerické znaky z ASCII tabulky na pozicích 32-126, tedy včetně mezery)
-3. Heslo neobsahuje sekvenci stejných znaků délky alespoň X.
-4. Heslo neobsahuje dva stejné podřetězce délky alespoň X.
-
-## Statistiky
-
-Pokud je zadaný argument programu --stats, program musí na konec výstupu vypsat celkové statistiky ve formátu:
 ```
-Statistika:
-Ruznych znaku: NCHARS
-Minimalni delka: MIN
-Prumerna delka: AVG
+Statistics:
+Different characters: NCHARS
+Minimum length: MIN
+Average length: AVG
 ```
-kde NCHARS je *počet různých znaků* vyskytujících se napříč všemi hesly, MIN je *délka nejkratšího hesla* (resp. hesel) a AVG je *průměrná délka hesla* (aritmetický průměr) zaokrouhlená na 1 desetiné místo. Statistiky zahrňují i hesla, která byla zahozena.
-
-## Implementační detaily
-
-### Vstupní data (seznam hesel)
-
-Seznam hesel je programu předán na standardním vstupu (stdin). Každé heslo je zadáno na samostatném řádku a obsahuje pouze ASCII textová data, kromě znaku nového řádku. Maximální délka hesla je 100 znaků, jinak se jedná o nevalidní data. Program musí podporovat neomezený počet hesel na vstupu.
-
-### Výstup programu
-
-Program na standardní výstup (stdout) vypisuje hesla ze vstupního seznamu, každé na samostatný řádek, která splňují požadovanou úroveň bezpečnosti zadanou jako argument programu LEVEL. Hesla musí být vypsána beze změny a ve stejném pořadí, v jakém se objevila na vstupu.
-
-Za výstupním seznamem hesel pak program volitelně vypisuje statistiku.
+where NCHARS is the *number of different characters* occurring across all passwords, MIN is the *length of the shortest password* (or passwords) and AVG is the *average length of passwords* (arithmetic mean) rounded to one decimal place. The statistics include even the passwords that were discarded.
